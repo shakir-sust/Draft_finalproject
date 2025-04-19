@@ -57,6 +57,30 @@ It is up to each team how you will perform feature engineering.
 
 For ex. in class we summarized weather on a monthly basis, but perhaps this is not the best approach. [e.g., maybe we can use weather data summarized by the whole growing season, every two weeks, crop growth stages etc.]
 
+[Note from feature engineering script:
+
+There are **two components** that we can consider when feature engineering weather data:  
+
+1. Summarizing time **window size**  
+  - Weekly  
+  - Monthly  
+  - Every 2 months  
+  - (Entire) Growing season  
+  - Based on crop growth stages [if we have planting and harvest date]
+  - Other?  
+  
+2. Summarizing **function**  
+  - Mean  
+  - Median  
+  - Minimum  
+  - Maximum  
+  - Standard deviation  
+
+In the next section, let's use the following:  
+  - Summarizing time window size: **monthly**  
+  - Summarizing function: **mean** or **sum**  
+
+]
 
 # E. Modeling strategies  
 You are asked to fully train two different machine learning models:  
