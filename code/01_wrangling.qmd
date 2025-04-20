@@ -1,0 +1,14 @@
+---
+title: "Data Science Applied to Ag - Final Project - ML"
+format:
+  html:
+    embed-resources: true
+    toc: true
+    theme: cerulean
+author: Md Shakir Moazzem, Umar Munir
+---
+
+# A. Introduction  
+
+This script contains the data wrangling steps for the final project.  
+
