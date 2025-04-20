@@ -12,3 +12,77 @@ author: Md Shakir Moazzem, Umar Munir
 
 This script contains the data wrangling steps for the final project.  
 
+#Code Setup
+
+```{r}
+library(tidyverse) # data wranggling and plotting
+library(car) # Anova functions
+library(emmeans) # model residuals extraction
+library(multcomp) # pairwise comparison letter display
+library(broom)
+library(readxl)
+library(dplyr)
+```
+
+#Data load
+
+```{r, meta}
+cvt_meta <- read.csv("../data/training/training_meta.csv") 
+
+view(cvt_meta)
+
+```
+
+```{r, soil}
+cvt_soil <- read.csv("../data/training/training_soil.csv") 
+
+view(cvt_soil)
+```
+
+```{r, trait}
+cvt_trait <- read.csv("../data/training/training_trait.csv") 
+
+view(cvt_trait)
+```
+
+
+#Data exploration
+
+```{r, meta}
+summary(cvt_meta)
+```
+
+
+```{r, soil}
+summary(cvt_soil)
+#This one is missing year 2014 data for the soil while the other two have it.
+```
+
+
+```{r, trait}
+summary(cvt_trait)
+```
+
+
+#Combine trait and soil data
+
+```{r}
+
+#All the useful variables are in these two datasets. I believe the meta data is only helpful if we want to pull more open data variable therefore I am going ahead and combining these two. Then I will convert the moisture percentage to 15.5.
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
