@@ -12,7 +12,6 @@ author: Md Shakir Moazzem, Umar Munir
 
 This script contains the data wrangling steps for the final project.  
 
-<<<<<<< HEAD
 # Setup  
 
 ##Loading packages  
@@ -150,87 +149,6 @@ soil_w <- soil %>%
 
 # View the result
 View(soil_w)
-=======
-#Code Setup
-
-```{r}
-library(tidyverse) # data wranggling and plotting
-library(car) # Anova functions
-library(emmeans) # model residuals extraction
-library(multcomp) # pairwise comparison letter display
-library(broom)
-library(readxl)
-library(dplyr)
-```
-
-#Data load
-
-```{r, meta}
-cvt_meta <- read.csv("../data/training/training_meta.csv") 
-
-view(cvt_meta)
-
-```
-
-```{r, soil}
-cvt_soil <- read.csv("../data/training/training_soil.csv") 
-
-nrow(cvt_soil)
-```
-
-```{r, trait}
-cvt_trait <- read.csv("../data/training/training_trait.csv") 
-
-nrow(cvt_trait)
-```
-
-
-#Data exploration
-
-```{r, meta}
-summary(cvt_meta)
-```
-
-
-```{r, soil}
-summary(cvt_soil)
-#This one is missing year 2014 data for the soil while the other two have it.
-```
-
-
-```{r, trait}
-summary(cvt_trait)
-```
-
-#Cvt_Soil_wrangling
-
-```{r}
-cvt_soil_cmpt <- cvt_soil %>% 
-  bind_rows(data.frame(year = 2014, value1 = NA )) %>% 
-  arrange(year)
-
-cvt_soil_cmpt
-```
-
-
-#Combine trait and soil data
-
-```{r}
-
-#All the useful variables are in these two datasets. I believe the meta data is only helpful if we want to pull more open data variable therefore I am going ahead and combining these two. Then I will convert the moisture percentage to 15.5.
-
-cvt_comb <- left_join(cvt_trait, cvt_soil, by = "site") 
-
-cvt_comb
-
-view(cvt_comb)
-```
-
-
-#Conversion of yield to 15.5% moisture rate
-
-```{r}
->>>>>>> 836dfb6f11c8fc4c40941b682918ce1763c0909d
 
 ```
 
@@ -248,7 +166,6 @@ view(cvt_comb)
 
 
 
-<<<<<<< HEAD
 
 
 
@@ -291,5 +208,3 @@ view(cvt_comb)
 
 
 
-=======
->>>>>>> 836dfb6f11c8fc4c40941b682918ce1763c0909d
