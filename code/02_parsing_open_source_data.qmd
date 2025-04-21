@@ -99,7 +99,7 @@ tw %>%
 There are 45 distinct sites in the data set.
 
 
-## Statistical distribution of mean yield (mg/ha)
+## Statistical distribution of mean corn yield (Mg/Ha)
 
 
 ```{r fiber strength}
@@ -112,21 +112,131 @@ ggplot(data = tw) +
 Looking at the density plot, the mean is around 9 [from the summary output, "Mean: 9.2025" for "mean_yield_mg_ha"].
 
 
+## Spatial distribution of mean corn yield (Mg/Ha) in USA
+
+```{r create map of USA and add points}
+
+states <- us_states() %>% 
+  filter( !(state_abbr %in% c("PR", "AK", "HI")) ) #to remove "PR" (Puerto Rico), "AK" (Alaska), and "HI" (Hawaii) from the rows of "states" object i.e., to keep all states that are NOT "PR", "AK", and "HI" #we use "%in%" to filter (i.e., work on) more than one state/entry #if we wanted to filter just 1 state, we would use == sign e.g., !(state_abbr == c("PR"))
+  
+ggplot() +
+  geom_sf(data = states) + #"geom_sf()" is used to plot "sf" object, which we just created above as "states" object; plots all states and territories of USA
+  geom_point(data = tw,
+             aes(x = longitude, #"Longitude" goes on longitude
+                 y = latitude) #"Latitude" goes on latitude
+             )
+
+```
 
 
+# Open weather data - Daymet  
+
+**Daymet** is an open-source weather data base developed by NASA (https://daymet.ornl.gov).  
+
+> Daymet provides long-term, continuous, gridded estimates of daily weather and climatology variables by interpolating and extrapolating ground-based observations through statistical modeling techniques.  
+
+Data characteristics:    
+  - Spatial extent: North America (US, CAN, MEX)  
+  - Spatial resolution: **1 km**  
+  - Temporal resolution: **daily**  
+  - Temporal extent: **1980 to present day**  
+  - Variables included:  
+    - day length (secs/day)    
+    - precipitation (mm/day)  
+    - shortwave radiation (W/m2)  
+    - snow water equivalent (kg/m2)  
+    - maximum air temperature (C)  
+    - minimum air temperature (C)  
+    - water vapor pressure (Pa)  
 
 
+## Daymet - one site-year 
+
+The following code chunk downloads the weather data from "Daymet" for only the 1st site and 1st year in the "tw" data frame.
+
+```{r one site-year}
+
+tw
+
+daymet_one <- download_daymet(site = tw$site[[1]], 
+                              lat = tw$latitude[[1]],
+                              lon = tw$longitude[[1]],
+                              start = tw$year[[1]],
+                              end = tw$year[[1]], #we specify the same year that we specifed in "start"
+                              simplify = T #to get tidyverse friendly data
+                              )
+
+daymet_one 
+
+```
 
 
+The following code chunk will obtain separate columns for all weather variables for 365 days.
+
+```{r}
+
+#To get separate columns for all weather variables for 365 days, we will pivot_wider() 
+
+daymet_one %>%
+  pivot_wider(names_from = measurement,
+              values_from = value
+              )
+
+```
 
 
+## Daymet - all site-year 
+
+The following code chunk downloads the weather data from "Daymet" for all site - years in the "tw" data frame.
+
+```{r}
+
+?download_daymet()
+
+tw_clean <- tw %>% anti_join(outside_daymet, by = c("hybrid","year","site"))
+
+daymet_all <- tw_clean %>% 
+  mutate(weather = pmap(list(.y = year, 
+                             .site = site, 
+                             .latitude = latitude, 
+                             .longitude = longitude), 
+                        function(.y, .site, .latitude, .longitude) 
+                          download_daymet( 
+                            site = .site, #specifying ".site" placeholder for "site = " argument
+                            lat = .latitude, #specifying ".lat" placeholder for "lat = " argument
+                            lon = .longitude, #specifying ".lon" placeholder for "lon = " argument
+                            start = .y, 
+                            end = .y, 
+                            simplify = T,
+                            silent = T) %>% #end of " download_daymet()" function
+                          rename(.year = year,
+                                 .site = site) 
+                        )) 
+
+head(daymet_all) #To look at the 1st 6 rows
+
+```
 
 
+```{r}
 
+lat_min <- 14.0   # south
+lat_max <- 83.0   # north
+lon_min <- -179.0 # west
+lon_max <- -52.0  # east
 
+#identifying observations outside Daymet coverage
+outside_daymet <- tw %>%
+  filter(
+    is.na(latitude)   |
+    is.na(longitude)  |
+    latitude  < lat_min   |
+    latitude  > lat_max   |
+    longitude < lon_min   |
+    longitude > lon_max
+  )
 
-
-
+```
 
 
 
