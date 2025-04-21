@@ -42,7 +42,7 @@ library(stringr)
 
 ## Reading data  
 
-The following code chunk is to read the csv files for the 3 training data sets
+The following code chunk will read the csv files for the 3 training data sets
 
 ```{r training data import, message=F, warning=F}
 
@@ -64,7 +64,7 @@ View(soil)
 
 ```
 
-The following code chunk is to read the csv files for the 3 test data sets
+The following code chunk will read the csv files for the 3 test data sets
 
 ```{r test data import, message=F, warning=F}
 
@@ -89,7 +89,7 @@ View(soil_test)
 
 # EDA 
 
-The following code chunk is to conduct EDA (Exploratory Data Analysis) for the training data sets
+The following code chunk will conduct EDA (Exploratory Data Analysis) for the training data sets.  
 
 ```{r EDA, message=F, warning=F}
 
@@ -106,23 +106,27 @@ summary(soil)
 
 ## Data wrangling 
 
-The following code chunk is to conduct data wrangling on the training_trait.csv
+The following code chunk will conduct data wrangling on the training_trait.csv
 
-```{r data wrangling, message=F, warning=F}
+```{r data wrangling training_trait.csv, message=F, warning=F}
 
 trait_w <- trait %>%
   #standardizing the column names
   clean_names() %>%
   #adjusting yield to a 15.5% moisture basis; Conversion formula: yield_15.5 = (yield * (1 - M/100)) / (1 - 0.155)
   mutate(yield_15.5 = (yield_mg_ha * (1 - grain_moisture / 100)) / (1 - 0.155)) %>%
-  #Feature engineering corn growth stages based on each growth‐state window using planting and harvest date  
   mutate(
     planting_date = as.Date(date_planted, "%m/%j/%y"),
     harvest_date = as.Date(date_harvested, "%m/%j/%y"),
     plant_doy = yday(planting_date),
     harvest_doy = yday(harvest_date),
     season_len = harvest_doy - plant_doy
-    )
+    ) %>%
+  arrange(hybrid, year, site, planting_date, harvest_date, plant_doy, harvest_doy, season_len) %>% 
+  group_by(hybrid, year, site, planting_date, harvest_date, plant_doy, harvest_doy, season_len) %>%
+  summarise(
+    mean_yield_15.5 = mean(yield_15.5) # to calculate mean yield
+    ) 
   
 summary(trait_w)
 
@@ -130,17 +134,18 @@ View(trait_w)
 
 
 ```
-The following code chunk is to conduct data wrangling on  "training_soil.csv"
 
 
-```{r}
+The following code chunk will conduct data wrangling on  "training_soil.csv"
+
+
+```{r data wrangling training_soil.csv, message=F, warning=F}
 
 soil_w <- soil %>%
   separate(
     col   = site,
     into  = c("site_left", "site_right"),
-    #splitting based on the last underscore (i.e. second underscore where present)
-    sep   = "_(?=[^_]*$)",
+    sep   = "_(?=[^_]*$)", #splitting "site" column based on the last underscore (i.e. second underscore where present)
     remove = TRUE,
     extra  = "merge",
     fill   = "right"
@@ -153,19 +158,30 @@ View(soil_w)
 
 ```
 
-The following code chunk is to merge the 3 training files based on site and year.
+The following code chunk will merge the 3 training data sets based on site and year.
 
-```{r}
+```{r merging 3 training, message=F, warning=F }
 
 train_full <- trait_w %>%
-  left_join(meta, by = c("site", "year")) %>%
-  left_join(soil_w, by = c("site", "year"))
+  left_join(meta, by = c("year", "site")) %>%
+  left_join(soil_w, by = c("year", "site"))
 
 View(train_full)
 
+summary(train_full)
+
 ```
 
+# Exporting  
 
+The following code chunk will export the wrangled data into a .csv file.
+
+
+```{r exporting wrangled data set}
+
+write_csv(train_full,
+          "../data/training_wrangled.csv")
+```
 
 
 
