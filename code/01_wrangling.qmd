@@ -8,7 +8,203 @@ format:
 author: Md Shakir Moazzem, Umar Munir
 ---
 
-# A. Introduction  
+# Introduction  
 
 This script contains the data wrangling steps for the final project.  
+
+# Setup  
+
+##Loading packages  
+
+```{r Setup, message=F}
+
+# Installing packages
+install.packages("readxl")
+install.packages("janitor")
+install.packages("dplyr")
+install.packages("tidyr")
+install.packages("readr")
+install.packages("lubridata")
+
+
+
+# Loading packages (every time you open R)
+library(readxl) # to read excel files
+library(janitor) # to clean data; helps fix and standardize the column names
+library(dplyr) # wrangling
+library(tidyr) # wrangling
+library(readr) # to export csv
+library(lubridate)
+library(stringr)
+
+```
+
+
+## Reading data  
+
+The following code chunk is to read the csv files for the 3 training data sets
+
+```{r training data import, message=F, warning=F}
+
+#reading the csv files for the 3 training data sets 
+
+trait <- read_csv("../data/training/training_trait.csv") 
+meta  <- read_csv("../data/training/training_meta.csv")
+soil  <- read_csv("../data/training/training_soil.csv")
+
+# Checking first rows
+trait
+meta
+soil
+
+# Viewing the data frame in a separate tab
+View(trait)
+View(meta)
+View(soil)
+
+```
+
+The following code chunk is to read the csv files for the 3 test data sets
+
+```{r test data import, message=F, warning=F}
+
+#reading the csv files for the 3 training data sets 
+
+submission_test  <- read_csv("../data/testing/testing_submission.csv")
+meta_test <- read_csv("../data/testing/testing_meta.csv") 
+soil_test  <- read_csv("../data/testing/testing_soil.csv")
+
+# Checking first rows
+submission_test
+meta_test #contains meta data for the year 2024 only
+soil_test #contains soil data for the year 2024 only
+
+# Viewing the data frame in a separate tab
+View(submission_test)
+View(meta_test)
+View(soil_test)
+
+
+```
+
+# EDA 
+
+The following code chunk is to conduct EDA (Exploratory Data Analysis) for the training data sets
+
+```{r EDA, message=F, warning=F}
+
+#EDA for "training_trait.csv"
+summary(trait)
+
+#EDA for "training_meta.csv"
+summary(meta)
+
+#EDA for "training_soil.csv"
+summary(soil)
+
+```
+
+## Data wrangling 
+
+The following code chunk is to conduct data wrangling on the the training data sets
+
+```{r data wrangling, message=F, warning=F}
+
+trait_w <- trait %>%
+  #standardizing the column names
+  clean_names() %>%
+  #adjusting yield to a 15.5% moisture basis; Conversion formula: yield_15.5 = (yield * (1 - M/100)) / (1 - 0.155)
+  mutate(yield_15.5 = (yield_mg_ha * (1 - grain_moisture / 100)) / (1 - 0.155)) %>%
+  #Feature engineering corn growth stages based on each growth‐state window using planting and harvest date  
+  mutate(
+    planting_date = as.Date(date_planted, "%m/%j/%y"),
+    harvest_date = as.Date(date_harvested, "%m/%j/%y"),
+    plant_doy = yday(planting_date),
+    harvest_doy = yday(harvest_date),
+    season_len = harvest_doy - plant_doy
+    )
+  
+summary(trait_w)
+
+View(trait_w)
+
+
+```
+
+
+```{r}
+
+soil_w <- soil %>%
+  separate(
+    col   = site,
+    into  = c("site_left", "site_right"),
+    #splitting based on the last underscore (i.e. second underscore where present)
+    sep   = "_(?=[^_]*$)",
+    remove = TRUE,
+    extra  = "merge",
+    fill   = "right"
+  ) %>%
+  select(-site_right) %>%
+  rename(site = site_left)
+
+# View the result
+View(soil_w)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
