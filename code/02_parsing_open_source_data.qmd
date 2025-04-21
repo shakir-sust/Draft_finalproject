@@ -1,0 +1,137 @@
+---
+title: "Data Science Applied to Ag - Final Project - ML"
+format:
+  html:
+    embed-resources: true
+    toc: true
+    theme: cerulean
+author: Md Shakir Moazzem, Umar Munir
+---
+
+# Introduction  
+
+This script outlines parsing open source weather data from Daymet.  
+
+# Setup  
+
+##Loading packages  
+
+The following code chunk will load necessary packages.  
+
+```{r Setup, message=F, warning=F}
+
+# Installing packages
+
+#install.packages("tidyverse")
+#install.packages("sf") #to manipulate vector geospatial files
+#install.packages("daymetr") #to retrieve data from daymet database website through R
+#install.packages("remotes") #to install R packages that are not available on CRAN, and available on GitHub
+#remotes::install_github("ropensci/USAboundaries") 
+#remotes::install_github("ropensci/USAboundariesData")
+
+# Loading packages
+
+library(tidyverse) #need to load "tidyverse" package at first
+library(sf) # for US map #to manipulate vector geo-spatial points
+library(daymetr) #to retrieve data from daymet database website through R
+library(remotes)
+library(USAboundaries) # for US state boundaries
+library(USAboundariesData)
+
+```
+
+
+## Reading data  
+
+The following code chunk will read the csv files for the 3 training data sets
+
+```{r training data import, message=F, warning=F}
+
+#reading the "training_wrangled.csv" file
+
+tw <- read_csv("../data/training_wrangled.csv") 
+
+# Checking first rows
+tw
+
+# Viewing the data frame in a separate tab
+View(tw)
+
+```
+
+# EDA
+
+## Summary statistics
+
+The following code chunk will conduct EDA of the wrangled data set.
+
+```{r wrangled data EDA, message=F, warning=F }
+
+summary(tw)
+
+```
+
+## Number of unique years
+
+The following code chunk will print the number of unique years.
+
+```{r unique years}
+
+unique(tw$year) %>% #gives a list
+  length() #gives the exact number of unique years
+
+```
+
+There are 10 distinct years in the data set.  
+
+## Number of unique sites
+
+The following code chunk will print the number of unique sites.
+
+```{r unique sites}
+
+tw %>%
+  distinct(site) %>% #Returns a tibble because it is a tidyverse package
+  nrow() #returns number of rows
+
+```
+
+There are 45 distinct sites in the data set.
+
+
+## Statistical distribution of mean yield (mg/ha)
+
+
+```{r fiber strength}
+
+ggplot(data = tw) +
+  geom_density(aes(x = mean_yield_mg_ha)) + #to get a density plot for "strength_gtex" [here we don't need a y variable because y is calculated by "geom_density()"]
+  geom_rug(aes(x = mean_yield_mg_ha)) #adds a vertical bar at the bottom of the geom_density() to where each observation has happened.
+
+```
+Looking at the density plot, the mean is around 9 [from the summary output, "Mean: 9.2025" for "mean_yield_mg_ha"].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -16,19 +16,24 @@ This script contains the data wrangling steps for the final project.
 
 ##Loading packages  
 
+The following code chunk will load necessary packages.
+
 ```{r Setup, message=F}
 
 # Installing packages
 
+#install.packages("tidyverse")
 #install.packages("readxl")
 #install.packages("janitor")
 #install.packages("dplyr")
 #install.packages("tidyr")
 #install.packages("readr")
 #install.packages("lubridata")
+#install.packages("stringr")
 
 # Loading packages 
 
+library(tidyverse)
 library(readxl) # to read excel files
 library(janitor) # to clean data; helps fix and standardize the column names
 library(dplyr) # wrangling
@@ -125,7 +130,7 @@ trait_w <- trait %>%
   arrange(hybrid, year, site, planting_date, harvest_date, plant_doy, harvest_doy, season_len) %>% 
   group_by(hybrid, year, site, planting_date, harvest_date, plant_doy, harvest_doy, season_len) %>%
   summarise(
-    mean_yield_15.5 = mean(yield_15.5) # to calculate mean yield
+    mean_yield_mg_ha = mean(yield_15.5) # to calculate mean yield
     ) 
   
 summary(trait_w)
@@ -168,13 +173,18 @@ train_full <- trait_w %>%
 
 View(train_full)
 
+```
+The following code chunk will conduct EDA of the merged dataframe.
+
+```{r merged EDA, message=F, warning=F }
+
 summary(train_full)
 
 ```
 
 # Exporting  
 
-The following code chunk will export the wrangled data into a .csv file.
+The following code chunk will export the wrangled data into a .csv.
 
 
 ```{r exporting wrangled data set}
