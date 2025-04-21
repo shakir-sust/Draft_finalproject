@@ -19,16 +19,16 @@ This script contains the data wrangling steps for the final project.
 ```{r Setup, message=F}
 
 # Installing packages
-install.packages("readxl")
-install.packages("janitor")
-install.packages("dplyr")
-install.packages("tidyr")
-install.packages("readr")
-install.packages("lubridata")
 
+#install.packages("readxl")
+#install.packages("janitor")
+#install.packages("dplyr")
+#install.packages("tidyr")
+#install.packages("readr")
+#install.packages("lubridata")
 
+# Loading packages 
 
-# Loading packages (every time you open R)
 library(readxl) # to read excel files
 library(janitor) # to clean data; helps fix and standardize the column names
 library(dplyr) # wrangling
@@ -106,7 +106,7 @@ summary(soil)
 
 ## Data wrangling 
 
-The following code chunk is to conduct data wrangling on the the training data sets
+The following code chunk is to conduct data wrangling on the training_trait.csv
 
 ```{r data wrangling, message=F, warning=F}
 
@@ -130,6 +130,7 @@ View(trait_w)
 
 
 ```
+The following code chunk is to conduct data wrangling on  "training_soil.csv"
 
 
 ```{r}
@@ -152,7 +153,17 @@ View(soil_w)
 
 ```
 
+The following code chunk is to merge the 3 training files based on site and year.
 
+```{r}
+
+train_full <- trait_w %>%
+  left_join(meta, by = c("site", "year")) %>%
+  left_join(soil_w, by = c("site", "year"))
+
+View(train_full)
+
+```
 
 
 
