@@ -36,13 +36,13 @@ view(cvt_meta)
 ```{r, soil}
 cvt_soil <- read.csv("../data/training/training_soil.csv") 
 
-view(cvt_soil)
+nrow(cvt_soil)
 ```
 
 ```{r, trait}
 cvt_trait <- read.csv("../data/training/training_trait.csv") 
 
-view(cvt_trait)
+nrow(cvt_trait)
 ```
 
 
@@ -63,14 +63,36 @@ summary(cvt_soil)
 summary(cvt_trait)
 ```
 
+#Cvt_Soil_wrangling
+
+```{r}
+cvt_soil_cmpt <- cvt_soil %>% 
+  bind_rows(data.frame(year = 2014, value1 = NA )) %>% 
+  arrange(year)
+
+cvt_soil_cmpt
+```
+
 
 #Combine trait and soil data
 
 ```{r}
 
 #All the useful variables are in these two datasets. I believe the meta data is only helpful if we want to pull more open data variable therefore I am going ahead and combining these two. Then I will convert the moisture percentage to 15.5.
+
+cvt_comb <- left_join(cvt_trait, cvt_soil, by = "site") 
+
+cvt_comb
+
+view(cvt_comb)
 ```
 
+
+#Conversion of yield to 15.5% moisture rate
+
+```{r}
+
+```
 
 
 
