@@ -59,6 +59,24 @@ View(tw)
 
 ```
 
+The following code chunk will rename the the "longitude" column as "lon" and "latitude" column as "lat" in the "tw" object
+
+```{r renaming lon and lat, message=F, warning=F}
+
+tw <- tw %>%
+  rename(
+    lon = longitude,
+    lat = latitude
+  )
+
+# Verifying the renaming of "longitude" and "latitude" columns
+
+glimpse(tw)
+
+names(tw)
+
+```
+
 # EDA
 
 ## Summary statistics
@@ -122,8 +140,8 @@ states <- us_states() %>%
 ggplot() +
   geom_sf(data = states) + #"geom_sf()" is used to plot "sf" object, which we just created above as "states" object; plots all states and territories of USA
   geom_point(data = tw,
-             aes(x = longitude, #"Longitude" goes on longitude
-                 y = latitude) #"Latitude" goes on latitude
+             aes(x = lon, #"Longitude" goes on longitude
+                 y = lat) #"Latitude" goes on latitude
              )
 
 ```
@@ -159,8 +177,8 @@ The following code chunk downloads the weather data from "Daymet" for only the 1
 tw
 
 daymet_one <- download_daymet(site = tw$site[[1]], 
-                              lat = tw$latitude[[1]],
-                              lon = tw$longitude[[1]],
+                              lat = tw$lat[[1]],
+                              lon = tw$lon[[1]],
                               start = tw$year[[1]],
                               end = tw$year[[1]], #we specify the same year that we specifed in "start"
                               simplify = T #to get tidyverse friendly data
@@ -199,34 +217,49 @@ lon_max <- -52.0 #east
 #identifying observations outside Daymet coverage
 outside_daymet <- tw %>%
   filter(
-    is.na(latitude) |
-    is.na(longitude) |
-    latitude  < lat_min |
-    latitude  > lat_max |
-    longitude < lon_min |
-    longitude > lon_max
+    is.na(lat) |
+    is.na(lon) |
+    lat < lat_min |
+    lat > lat_max |
+    lon < lon_min |
+    lon > lon_max
   )
 
 ```
+
+
+The following code chunk will remove the site-years having longitudes and latitudes outside the range of Daymet database form the original "tw" object
+
+```{r removing outside range lon lat, message=F, warning=F}
+
+tw_clean <- tw %>% 
+  anti_join(outside_daymet, 
+            by = c("hybrid","year","site")
+            )
+
+tw_clean
+
+glimpse(tw_clean)
+
+names(tw_clean)
+
+```
+
 
 The following code chunk will download the weather data from "Daymet" for all site - years in the "tw" data frame.
 
 ```{r}
 
-?download_daymet()
-
-tw_clean <- tw %>% anti_join(outside_daymet, by = c("hybrid","year","site"))
-
 daymet_all <- tw_clean %>% 
   mutate(weather = pmap(list(.y = year, 
                              .site = site, 
-                             .latitude = latitude, 
-                             .longitude = longitude), 
-                        function(.y, .site, .latitude, .longitude) 
+                             .lat = lat, 
+                             .lon = lon), 
+                        function(.y, .site, .lat, .lon) 
                           download_daymet( 
                             site = .site, #specifying ".site" placeholder for "site = " argument
-                            lat = .latitude, #specifying ".lat" placeholder for "lat = " argument
-                            lon = .longitude, #specifying ".lon" placeholder for "lon = " argument
+                            lat = .lat, #specifying ".lat" placeholder for "lat = " argument
+                            lon = .lon, #specifying ".lon" placeholder for "lon = " argument
                             start = .y, 
                             end = .y, 
                             simplify = T,
