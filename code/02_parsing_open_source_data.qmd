@@ -132,7 +132,7 @@ Looking at the density plot, the mean is around 9 [from the summary output, "Mea
 
 ## Spatial distribution of mean corn yield (Mg/Ha) in USA
 
-```{r create map of USA and add points}
+```{r create map of USA and add points, message=F, warning=F}
 
 states <- us_states() %>% 
   filter( !(state_abbr %in% c("PR", "AK", "HI")) ) #to remove "PR" (Puerto Rico), "AK" (Alaska), and "HI" (Hawaii) from the rows of "states" object i.e., to keep all states that are NOT "PR", "AK", and "HI" #we use "%in%" to filter (i.e., work on) more than one state/entry #if we wanted to filter just 1 state, we would use == sign e.g., !(state_abbr == c("PR"))
@@ -173,8 +173,6 @@ Data characteristics:
 The following code chunk downloads the weather data from "Daymet" for only the 1st site and 1st year in the "tw" data frame.
 
 ```{r one site-year}
-
-tw
 
 daymet_one <- download_daymet(site = tw$site[[1]], 
                               lat = tw$lat[[1]],
@@ -278,6 +276,10 @@ The following code chunk will unnest the weather column.
 ```{r}
 
 daymet_all_unnest <- daymet_all %>%
+  #rename(
+    #lon = longitude,
+    #lat = latitude
+  #) #%>%
   unnest(weather) %>% #To unnest the "weather" column i.e., to unnest the "tibble" dataframes inside all of the cells of the "weather" column and then to bring them back into the main level of the data frame
   pivot_wider(names_from = measurement, #to pivot wide the names from the "measurement" column
               values_from = value) %>% #to pivot wide the values from the "value" column #because we want to change the "measurement" column from long form to wide form
