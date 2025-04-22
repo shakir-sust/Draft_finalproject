@@ -191,19 +191,19 @@ The following code chunk will filter out site-years having longitudes and latitu
 
 ```{r}
 
-lat_min <- 14.0   # south
-lat_max <- 83.0   # north
-lon_min <- -179.0 # west
-lon_max <- -52.0  # east
+lat_min <- 14.0 #south
+lat_max <- 83.0 #north
+lon_min <- -179.0 #west
+lon_max <- -52.0 #east
 
 #identifying observations outside Daymet coverage
 outside_daymet <- tw %>%
   filter(
-    is.na(latitude)   |
-    is.na(longitude)  |
-    latitude  < lat_min   |
-    latitude  > lat_max   |
-    longitude < lon_min   |
+    is.na(latitude) |
+    is.na(longitude) |
+    latitude  < lat_min |
+    latitude  > lat_max |
+    longitude < lon_min |
     longitude > lon_max
   )
 
