@@ -240,10 +240,32 @@ head(daymet_all) #To look at the 1st 6 rows
 ```
 
 
+The following code chunk will unnest the weather column. 
+
+```{r}
+
+daymet_all_unnest <- daymet_all %>%
+  unnest(weather) %>% #To unnest the "weather" column i.e., to unnest the "tibble" dataframes inside all of the cells of the "weather" column and then to bring them back into the main level of the data frame
+  pivot_wider(names_from = measurement, #to pivot wide the names from the "measurement" column
+              values_from = value) %>% #to pivot wide the values from the "value" column #because we want to change the "measurement" column from long form to wide form
+  janitor::clean_names() #to clean and standardize the column names with all lower cases and underscores to fill within words 
+
+daymet_all_unnest
+
+```
 
 
+# Exporting  
 
+The following code chunk will export the open source weather data pulled from Daymet into a .csv file so that we can reuse it any time without having to download again.  
 
+```{r}
+
+write_csv(daymet_all_unnest,
+          "../data/fieldweatherdata.csv"
+          )
+
+```
 
 
 
