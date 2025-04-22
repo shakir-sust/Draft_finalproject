@@ -187,7 +187,29 @@ daymet_one %>%
 
 ## Daymet - all site-year 
 
-The following code chunk downloads the weather data from "Daymet" for all site - years in the "tw" data frame.
+The following code chunk will filter out site-years having longitudes and latitudes that are outside the scope/range of Daymet database.
+
+```{r}
+
+lat_min <- 14.0   # south
+lat_max <- 83.0   # north
+lon_min <- -179.0 # west
+lon_max <- -52.0  # east
+
+#identifying observations outside Daymet coverage
+outside_daymet <- tw %>%
+  filter(
+    is.na(latitude)   |
+    is.na(longitude)  |
+    latitude  < lat_min   |
+    latitude  > lat_max   |
+    longitude < lon_min   |
+    longitude > lon_max
+  )
+
+```
+
+The following code chunk will download the weather data from "Daymet" for all site - years in the "tw" data frame.
 
 ```{r}
 
@@ -218,25 +240,7 @@ head(daymet_all) #To look at the 1st 6 rows
 ```
 
 
-```{r}
 
-lat_min <- 14.0   # south
-lat_max <- 83.0   # north
-lon_min <- -179.0 # west
-lon_max <- -52.0  # east
-
-#identifying observations outside Daymet coverage
-outside_daymet <- tw %>%
-  filter(
-    is.na(latitude)   |
-    is.na(longitude)  |
-    latitude  < lat_min   |
-    latitude  > lat_max   |
-    longitude < lon_min   |
-    longitude > lon_max
-  )
-
-```
 
 
 
